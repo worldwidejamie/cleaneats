@@ -9,7 +9,7 @@ import { CardContent } from '@mui/material';
 import { CardMedia } from '@mui/material';
 import { Typography } from '@mui/material';
 
-export default function RestaurantGrid() {
+export default function FailingRestaurantGrid() {
 	return (
 	<Box sx={{flexGrow: 1, mt: 4, px: 2}}>
 		<Grid container spacing={2}>

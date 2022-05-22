@@ -9,7 +9,7 @@ import { CardContent } from '@mui/material';
 import { CardMedia } from '@mui/material';
 import { Typography } from '@mui/material';
 
-export default function RestaurantGrid() {
+export default function PassingRestaurantGrid() {
 	return (
 	<Container sx={{mt: 4,}}>
 		<Typography variant="h4" component="h2" sx={{px: 2}}>
