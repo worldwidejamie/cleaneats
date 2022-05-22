@@ -1,13 +1,14 @@
-import * as React from 'react';
-import { styled } from '@mui/material';
-import { Container } from '@mui/system';
-import { Box } from '@mui/system';
-import { Grid } from '@mui/material';
-import { Card } from '@mui/material';
-import { CardHeader } from '@mui/material';
-import { CardContent } from '@mui/material';
-import { CardMedia } from '@mui/material';
-import { Typography } from '@mui/material';
+import * as React from "react";
+import { styled } from "@mui/material";
+import Container from "@mui/system/Container";
+import Box from "@mui/system/Box";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import GppBadIcon from "@mui/icons-material/GppBad";
 
 export default function FailingRestaurantGrid() {
 	return (
