@@ -1,4 +1,5 @@
-import * as React from "react";
+import React, { useState } from "react";
+import RestaurantCard from "./RestaurantCard";
 import { styled } from "@mui/material";
 import Container from "@mui/system/Container";
 import Box from "@mui/system/Box";
@@ -10,7 +11,46 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import GppBadIcon from "@mui/icons-material/GppBad";
 
-export default function FailingRestaurantGrid() {
+export default function FailingRestaurantGrid(props) {
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [restaurant, setRestaurant] = useState([]);
+
+  React.useEffect(() => {
+    fetch(
+      "https://data.cityofchicago.org/resource/4ijn-s7e5.json?results=Fail&$limit=6"
+    )
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          setIsLoaded(true);
+          setRestaurant(result);
+        },
+        (error) => {
+          setIsLoaded(true);
+          setRestaurnt(error);
+        }
+      );
+  }, []);
+
+  let cardResponse;
+  if (error) {
+    cardResponse = <div>Error: {error.message}</div>;
+  } else if (!isLoaded) {
+    cardResponse = <div>Loading...</div>;
+  } else {
+    cardResponse = restaurant.map((restaurant) => (
+      <Grid item sm={6} md={4}>
+        <RestaurantCard
+          key={restaurant.restaurant_id}
+          restaurant={restaurant}
+          restaurantName={restaurant.aka_name}
+          restaurantGrade={restaurant.results}
+          testDate={restaurant.inspection_date}
+        />
+      </Grid>
+    ));
+  }
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" component="h2" sx={{ px: 2 }}>
@@ -18,42 +58,7 @@ export default function FailingRestaurantGrid() {
       </Typography>
       <Box sx={{ flexGrow: 1, mt: 2, px: 2 }}>
         <Grid container spacing={2}>
-          <Grid item sm={6} md={4}>
-            <Card>
-              <CardHeader title="Delicious Foods" subheader="Passing" />
-              <CardContent>
-                <CardMedia
-                  component="img"
-                  image="https://images.squarespace-cdn.com/content/v1/600a96cbf8894d79eb1e1b1f/1611317333085-PBPKUT3S28T0CV0IJUL8/_34A7895-min.jpg?format=1500w"
-                  alt="Beard Papa's restaurant facade"
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item sm={6} md={4}>
-            <Card>
-              <CardHeader title="Delicious Foods" subheader="Passing" />
-              <CardContent>
-                <CardMedia
-                  component="img"
-                  image="https://images.squarespace-cdn.com/content/v1/600a96cbf8894d79eb1e1b1f/1611317333085-PBPKUT3S28T0CV0IJUL8/_34A7895-min.jpg?format=1500w"
-                  alt="Beard Papa's restaurant facade"
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item sm={6} md={4}>
-            <Card>
-              <CardHeader title="Delicious Foods" subheader="Passing" />
-              <CardContent>
-                <CardMedia
-                  component="img"
-                  image="https://images.squarespace-cdn.com/content/v1/600a96cbf8894d79eb1e1b1f/1611317333085-PBPKUT3S28T0CV0IJUL8/_34A7895-min.jpg?format=1500w"
-                  alt="Beard Papa's restaurant facade"
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+          {cardResponse}
         </Grid>
       </Box>
     </Container>
