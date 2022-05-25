@@ -18,7 +18,7 @@ export default function FailingRestaurantGrid(props) {
 
   React.useEffect(() => {
     fetch(
-      "https://data.cityofchicago.org/resource/4ijn-s7e5.json?results=Fail&$limit=6"
+      "https://data.cityofchicago.org/resource/4ijn-s7e5.json?results=Fail&$where=inspection_date between '2022-01-01T12:00:00' and '2022-05-20T14:00:00'&$limit=12"
     )
       .then((res) => res.json())
       .then(
