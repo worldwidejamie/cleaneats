@@ -1,4 +1,6 @@
-import * as React from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import axios from "axios";
+import useGeolocation from "react-hook-geolocation";
 import RestaurantCard from "./RestaurantCard";
 import { styled } from "@mui/material";
 import Container from "@mui/system/Container";
@@ -10,28 +12,47 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import GppGoodIcon from "@mui/icons-material/GppGood";
+import { LocalConvenienceStoreOutlined } from "@mui/icons-material";
 
 export default function PassingRestaurantGrid(props) {
-  const [error, setError] = React.useState(null);
-  const [isLoaded, setIsLoaded] = React.useState(false);
-  const [restaurant, setRestaurant] = React.useState([]);
+  const geolocation = useGeolocation({});
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [restaurant, setRestaurant] = useState([]);
+  const [hasCoords, setHasCoords] = useState(false);
+  const [apiURL, setApiURL] = useState([]);
+  const [latitude, setLatitude] = useState([]);
+  const [longitude, setLongitude] = useState([]);
 
-  React.useEffect(() => {
-    fetch(
-      "https://data.cityofchicago.org/resource/4ijn-s7e5.json?results=Pass&$where=inspection_date between '2022-01-01T12:00:00' and '2022-05-20T14:00:00'&$limit=12"
-    )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          setIsLoaded(true);
-          setRestaurant(result);
-        },
-        (error) => {
-          setIsLoaded(true);
-          setRestaurant(error);
-        }
+  useLayoutEffect(() => {
+    if (geolocation.error) {
+      setError(geolocation.error);
+    }
+    setLatitude(geolocation.latitude);
+    setLongitude(geolocation.longitude);
+    setHasCoords(true);
+  });
+
+  useEffect(() => {
+    const getAPIUrl = async () => {
+      setApiURL(
+        `https://data.cityofchicago.org/resource/4ijn-s7e5.json?$order=inspection_date DESC&$where=within_circle(location,  ${longitude}, ${latitude},1000)&results=Pass&$limit=12`
       );
-  }, []);
+    };
+    getAPIUrl();
+  }, [latitude, longitude]);
+
+  useEffect(() => {
+    const getRestaurants = async () => {
+      const apiResponse = axios.get(apiURL).then((res) => {
+        setIsLoaded(true);
+        setRestaurant(res.data);
+      });
+    };
+    if (apiURL) {
+      getRestaurants();
+    }
+  }, [apiURL]);
 
   let cardResponse;
   if (error) {
@@ -40,9 +61,8 @@ export default function PassingRestaurantGrid(props) {
     cardResponse = <div>Loading...</div>;
   } else {
     cardResponse = restaurant.map((restaurant) => (
-      <Grid item sm={6} md={4}>
+      <Grid item sm={6} md={4} key={restaurant.inspection_id}>
         <RestaurantCard
-          key={restaurant.restaurant_id}
           restaurant={restaurant}
           restaurantName={restaurant.aka_name}
           restaurantGrade={restaurant.results}
