@@ -21,12 +21,19 @@ const cleanDate = (date) => {
 };
 
 export default function RestaurantCard(props) {
-  console.log(props);
   return (
-    <Card>
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+      }}
+    >
       <CardHeader
         title={capitalCase(props.restaurantName)}
-        subheader="Passing"
+        // title={props.restaurantName}
+        subheader={props.restaurantGrade}
       />
       <CardContent>
         <CardMedia
