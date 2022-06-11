@@ -12,6 +12,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import GppBadIcon from "@mui/icons-material/GppBad";
+import Skeleton from "@mui/material/Skeleton";
 import { LocalConvenienceStoreOutlined } from "@mui/icons-material";
 
 export default function FailingRestaurantGrid(props) {
@@ -45,8 +46,8 @@ export default function FailingRestaurantGrid(props) {
   useEffect(() => {
     const getRestaurants = async () => {
       const apiResponse = axios.get(apiURL).then((res) => {
-        setIsLoaded(true);
         setRestaurant(res.data);
+        setIsLoaded(true);
       });
     };
     if (apiURL) {
@@ -58,7 +59,7 @@ export default function FailingRestaurantGrid(props) {
   if (error) {
     cardResponse = <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
-    cardResponse = <div>Loading...</div>;
+    cardResponse = <Skeleton variant="rectangular" width={210} height={118} />;
   } else {
     cardResponse = restaurant.map((restaurant) => (
       <Grid item sm={6} md={4} key={restaurant.inspection_id}>
