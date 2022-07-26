@@ -7,11 +7,13 @@ import RestaurantGrid from "./components/RestaurantGrid";
 
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <CssBaseline />
-    <AppTopBar />
-    <RestaurantGrid inspectionResult="Pass" />
-    <RestaurantGrid inspectionResult="Fail" />
-  </React.StrictMode>
-);
+if( typeof document !== 'undefined') {
+    ReactDOM.createRoot(document.getElementById("root")).render(
+        <React.StrictMode>
+            <CssBaseline/>
+            <AppTopBar/>
+            <RestaurantGrid inspectionResult="Pass"/>
+            <RestaurantGrid inspectionResult="Fail"/>
+        </React.StrictMode>
+    );
+}
