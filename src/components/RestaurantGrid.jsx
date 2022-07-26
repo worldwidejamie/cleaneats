@@ -13,27 +13,33 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import GppBadIcon from "@mui/icons-material/GppBad";
 import GppGoodIcon from "@mui/icons-material/GppGood";
-import { LocalConvenienceStoreOutlined } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
+RestaurantGrid.propTypes = {
+  inspectionResult: PropTypes.string
+}
 export default function RestaurantGrid(props) {
   const geolocation = useGeolocation({});
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [restaurant, setRestaurant] = useState([]);
-  const [hasCoords, setHasCoords] = useState(false);
-  const [apiURL, setApiURL] = useState([]);
-  const [latitude, setLatitude] = useState([]);
-  const [longitude, setLongitude] = useState([]);
-  const [inspectionResults, setInspectionResults] = useState([]);
+  const [apiURL, setApiURL] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [inspectionResults, setInspectionResults] = useState('');
+  const ISSERVER = typeof window === 'undefined';
   useLayoutEffect(() => {
     if (geolocation.error) {
       setError(geolocation.error);
     }
     setLatitude(geolocation.latitude);
-    localStorage.setItem("latitude", geolocation.latitude);
+    if (ISSERVER) {
+      localStorage.setItem("latitude", geolocation.latitude);
+    }
     setLongitude(geolocation.longitude);
-    localStorage.setItem("longitude", geolocation.longitude);
-    setHasCoords(true);
+    if (ISSERVER) {
+      localStorage.setItem("longitude", geolocation.longitude);
+    }
   });
 
   useEffect(() => {
@@ -43,14 +49,15 @@ export default function RestaurantGrid(props) {
         `https://data.cityofchicago.org/resource/4ijn-s7e5.json?$order=inspection_date DESC&$where=within_circle(location,  ${longitude}, ${latitude},1000)&results=${inspectionResults}&$limit=12`
       );
     };
-    // getAPIUrl();
+    getAPIUrl();
   }, [latitude, longitude]);
 
   useEffect(() => {
     const getRestaurants = async () => {
-      // const apiResponse = axios.get(apiURL).then((res) => {
-      //   setRestaurant(res.data);
-      // });
+      const apiResponse = axios.get(apiURL).then((res) => {
+        setRestaurant(res.data);
+      });
+      console.log(apiResponse)
     };
     if (apiURL) {
       getRestaurants();
@@ -58,7 +65,7 @@ export default function RestaurantGrid(props) {
     if (restaurant.length > 0) {
       setIsLoaded(true);
     }
-  }, [apiURL, restaurant]);
+  }, [isLoaded]);
   let cardResponse;
   const skeletonCard = (
     <Skeleton>
