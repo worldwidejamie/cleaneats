@@ -54,16 +54,27 @@ export default function RestaurantGrid(props) {
 
   useEffect(() => {
     const getRestaurants = async () => {
-      const apiResponse = axios.get(apiURL).then((res) => {
+      const apiResponse = axios({
+        method: "get",
+        url: `/resource/4ijn-s7e5.json`,
+        baseURL: 'https://data.cityofchicago.org/',
+        responseType: "json",
+        params: {
+            $order: "inspection_date DESC",
+            $where: `within_circle(location,  ${longitude}, ${latitude},1000) AND facility_type='Restaurant'`,
+            results: inspectionResults,
+            $limit: "9"
+        }
+      }).then((res) => {
         setRestaurant(res.data);
-      });
-      console.log(apiResponse)
+      })
     };
     if (apiURL) {
       getRestaurants();
     }
     if (restaurant.length > 0) {
       setIsLoaded(true);
+      console.log(restaurant)
     }
   }, [isLoaded]);
   let cardResponse;
@@ -72,7 +83,7 @@ export default function RestaurantGrid(props) {
       <Card></Card>
     </Skeleton>
   );
-  const skeletonCardArray = Array(3).fill(skeletonCard);
+
   let eatsStatus;
   let statusIcon;
   if (inspectionResults === "Pass") {
@@ -116,6 +127,7 @@ export default function RestaurantGrid(props) {
           }
           restaurantGrade={restaurant.results}
           testDate={restaurant.inspection_date}
+          address={restaurant.address}
         />
       </Grid>
     ));
