@@ -6,8 +6,6 @@ import Container from "@mui/system/Container";
 import Box from "@mui/system/Box";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
@@ -28,19 +26,22 @@ export default function RestaurantGrid(props) {
   const [longitude, setLongitude] = useState('');
   const [inspectionResults, setInspectionResults] = useState('');
   const ISSERVER = typeof window === 'undefined';
+
   useLayoutEffect(() => {
     if (geolocation.error) {
       setError(geolocation.error);
     }
     setLatitude(geolocation.latitude);
     if (ISSERVER) {
+      // eslint-disable-next-line no-undef
       localStorage.setItem("latitude", geolocation.latitude);
     }
     setLongitude(geolocation.longitude);
     if (ISSERVER) {
+      // eslint-disable-next-line no-undef
       localStorage.setItem("longitude", geolocation.longitude);
     }
-  });
+  }, [latitude, longitude, geolocation]);
 
   useEffect(() => {
     setInspectionResults(props.inspectionResult);
@@ -54,36 +55,29 @@ export default function RestaurantGrid(props) {
 
   useEffect(() => {
     const getRestaurants = async () => {
-      const apiResponse = axios({
+      axios({
         method: "get",
         url: `/resource/4ijn-s7e5.json`,
         baseURL: 'https://data.cityofchicago.org/',
         responseType: "json",
         params: {
-            $order: "inspection_date DESC",
-            $where: `within_circle(location,  ${longitude}, ${latitude},1000) AND facility_type='Restaurant'`,
-            results: inspectionResults,
-            $limit: "9"
+          $order: "inspection_date DESC",
+          $where: `within_circle(location,  ${longitude}, ${latitude},1000) AND facility_type='Restaurant'`,
+          results: inspectionResults,
+          $limit: "9"
         }
       }).then((res) => {
         setRestaurant(res.data);
-      })
+      });
     };
     if (apiURL) {
       getRestaurants();
     }
     if (restaurant.length > 0) {
       setIsLoaded(true);
-      console.log(restaurant)
     }
   }, [isLoaded]);
   let cardResponse;
-  const skeletonCard = (
-    <Skeleton>
-      <Card></Card>
-    </Skeleton>
-  );
-
   let eatsStatus;
   let statusIcon;
   if (inspectionResults === "Pass") {
