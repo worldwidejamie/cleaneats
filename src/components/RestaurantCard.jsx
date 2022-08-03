@@ -1,9 +1,10 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/system/Box";
 
 function capitalCase(str) {
   let lowercaseString = str.toLowerCase();
@@ -20,7 +21,24 @@ const cleanDate = (date) => {
   return dateObj.toDateString();
 };
 
+const modalStyle = {
+  position: "absolute",
+  marginTop: "25vmin",
+  padding: "1.25rem",
+  left: "27.5vw",
+  right: "auto",
+  bottom: "auto",
+  height: "auto",
+  width: "45vw",
+  border: "red solid 1px",
+  backgroundColor: '#fff',
+}
+
 export default function RestaurantCard(props) {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <Card
       sx={{
@@ -29,10 +47,13 @@ export default function RestaurantCard(props) {
         justifyContent: "space-between",
         height: "100%",
       }}
+      onClick={handleOpen}
     >
       <CardHeader
+          /* eslint-disable-next-line react/prop-types */
         title={capitalCase(props.restaurantName)}
         // title={props.restaurantName}
+        /* eslint-disable-next-line react/prop-types */
         subheader={props.restaurantGrade}
       />
       <CardContent>
@@ -42,9 +63,21 @@ export default function RestaurantCard(props) {
           alt="Beard Papa's restaurant facade"
         />
         <div className="test-date">
+          {/* eslint-disable-next-line react/prop-types */}
           Testing Date: {cleanDate(props.testDate)}
         </div>
       </CardContent>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="restaurant-modal"
+        // TODO: add Modal description
+        aria-describedby="restaurant-modal-description"
+      >
+        <Box style={modalStyle}>
+          {/*<Typography id="restaurant-modal"/>*/}
+        </Box>
+      </Modal>
     </Card>
   );
 }
