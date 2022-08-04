@@ -31,8 +31,8 @@ const modalStyle = {
   height: "auto",
   width: "45vw",
   border: "red solid 1px",
-  backgroundColor: '#fff',
-}
+  backgroundColor: "#fff",
+};
 
 export default function RestaurantCard(props) {
   const [open, setOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function RestaurantCard(props) {
       onClick={handleOpen}
     >
       <CardHeader
-          /* eslint-disable-next-line react/prop-types */
+        /* eslint-disable-next-line react/prop-types */
         title={capitalCase(props.restaurantName)}
         // title={props.restaurantName}
         /* eslint-disable-next-line react/prop-types */
@@ -74,9 +74,7 @@ export default function RestaurantCard(props) {
         // TODO: add Modal description
         aria-describedby="restaurant-modal-description"
       >
-        <Box style={modalStyle}>
-          {/*<Typography id="restaurant-modal"/>*/}
-        </Box>
+        <Box style={modalStyle}>{/*<Typography id="restaurant-modal"/>*/}</Box>
       </Modal>
     </Card>
   );
