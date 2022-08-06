@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, {useState, useEffect, useLayoutEffect} from "react";
 import axios from "axios";
 import useGeolocation from "react-hook-geolocation";
 import RestaurantCard from "./RestaurantCard";
@@ -26,7 +26,7 @@ export default function RestaurantGrid(props) {
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [inspectionResult, setInspectionResult] = useState(
-    props.inspectionResult
+      props.inspectionResult
   );
   useLayoutEffect(() => {
     if (geolocation.error) {
@@ -79,61 +79,63 @@ export default function RestaurantGrid(props) {
 
   if (inspectionResult === "Pass") {
     eatsStatus = "clean";
-    statusIcon = <GppGoodIcon htmlColor="green" />;
+    statusIcon = <GppGoodIcon htmlColor="green"/>;
   } else {
     eatsStatus = "not clean";
-    statusIcon = <GppBadIcon htmlColor="red" />;
+    statusIcon = <GppBadIcon htmlColor="red"/>;
   }
 
   if (error) {
     cardResponse = <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     cardResponse = (
-      <Grid item sm={6} md={4} key={restaurant.inspection_id}>
-        <Card
-          sx={{
-            height: "auto",
-            width: "25vw",
-            padding: "1rem",
-          }}
-        >
-          <Skeleton variant="text"></Skeleton>
-          <Skeleton variant="text"></Skeleton>
-          <Skeleton variant="text"></Skeleton>
-          <Skeleton variant="rect">
-            <CardMedia
-              component="img"
-              image="https://images.squarespace-cdn.com/content/v1/600a96cbf8894d79eb1e1b1f/1611317333085-PBPKUT3S28T0CV0IJUL8/_34A7895-min.jpg?format=1500w"
-            />
-          </Skeleton>
-        </Card>
-      </Grid>
+        <Grid item sm={6} md={4} key={restaurant.inspection_id}>
+          <Card
+              sx={{
+                height: "auto",
+                width: "25vw",
+                padding: "1rem",
+              }}
+          >
+            <Skeleton variant="text"></Skeleton>
+            <Skeleton variant="text"></Skeleton>
+            <Skeleton variant="text"></Skeleton>
+            <Skeleton variant="rect">
+              <CardMedia
+                  component="img"
+                  image="https://images.squarespace-cdn.com/content/v1/600a96cbf8894d79eb1e1b1f/1611317333085-PBPKUT3S28T0CV0IJUL8/_34A7895-min.jpg?format=1500w"
+              />
+            </Skeleton>
+          </Card>
+          {/*{console.log(props)}*/}
+        </Grid>
     );
   } else {
     cardResponse = restaurant.map((restaurant) => (
-      <Grid item sm={6} md={4} key={restaurant.inspection_id}>
-        <RestaurantCard
-          restaurant={restaurant}
-          restaurantName={
-            restaurant.aka_name ? restaurant.aka_name : restaurant.dba_name
-          }
-          restaurantGrade={restaurant.results}
-          testDate={restaurant.inspection_date}
-          address={restaurant.address}
-        />
-      </Grid>
+        <Grid item sm={6} md={4} key={restaurant.inspection_id}>
+          <RestaurantCard
+              restaurant={restaurant}
+              restaurantName={
+                restaurant.aka_name ? restaurant.aka_name : restaurant.dba_name
+              }
+              restaurantGrade={restaurant.results}
+              testDate={restaurant.inspection_date}
+              address={restaurant.address}
+
+          />
+        </Grid>
     ));
   }
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" component="h2" sx={{ px: 2 }}>
-        These eats are {eatsStatus} {statusIcon}
-      </Typography>
-      <Box sx={{ flexGrow: 1, mt: 2, px: 2 }}>
-        <Grid container spacing={2}>
-          {cardResponse}
-        </Grid>
-      </Box>
-    </Container>
+      <Container sx={{mt: 4}}>
+        <Typography variant="h4" component="h2" sx={{px: 2}}>
+          These eats are {eatsStatus} {statusIcon}
+        </Typography>
+        <Box sx={{flexGrow: 1, mt: 2, px: 2}}>
+          <Grid container spacing={2}>
+            {cardResponse}
+          </Grid>
+        </Box>
+      </Container>
   );
 }
