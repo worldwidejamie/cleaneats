@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useLayoutEffect} from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 import axios from "axios";
 import useGeolocation from "react-hook-geolocation";
 import RestaurantCard from "./RestaurantCard";
@@ -17,6 +17,35 @@ RestaurantGrid.propTypes = {
   children: PropTypes.any,
   inspectionResult: PropTypes.string,
 };
+
+
+// TODO: Find out why it's making so many requests to the server.
+const getPlaceDetails = async (restaurant) => {
+  const getRestaurantID = await axios({
+    method: "get",
+    url: `/api/maps/api/place/findplacefromtext/json`,
+    params: {
+      input: restaurant.aka_name,
+      inputtype: "textquery",
+      key: "AIzaSyCTAUbZfKHPnx35FCV2jLwIzykGzxnSEwQ",
+      locationbias:"point:${restaurant.latitude},${restaurant.longitude}",
+    },
+  }).then((res) => {
+    return res.data.candidates[0].place_id;
+  })
+  return axios({
+    method: "get",
+    url: `/api/maps/api/place/details/json`,
+    params: {
+      place_id: getRestaurantID,
+      key: "AIzaSyCTAUbZfKHPnx35FCV2jLwIzykGzxnSEwQ",
+      // fields: "url"
+    }
+  }).then((res) => {
+    console.log(res.data)
+  });
+}
+
 
 export default function RestaurantGrid(props) {
   const geolocation = useGeolocation({});
@@ -73,6 +102,8 @@ export default function RestaurantGrid(props) {
     inspectionResult,
   ]);
 
+
+
   let cardResponse;
   let eatsStatus;
   let statusIcon;
@@ -112,16 +143,19 @@ export default function RestaurantGrid(props) {
     );
   } else {
     cardResponse = restaurant.map((restaurant) => (
+
         <Grid item sm={6} md={4} key={restaurant.inspection_id}>
           <RestaurantCard
               restaurant={restaurant}
+              placeDetails={getPlaceDetails(restaurant)}
               restaurantName={
                 restaurant.aka_name ? restaurant.aka_name : restaurant.dba_name
               }
               restaurantGrade={restaurant.results}
               testDate={restaurant.inspection_date}
               address={restaurant.address}
-
+              latitude={restaurant.latitude}
+              longitude={restaurant.longitude}
           />
         </Grid>
     ));
