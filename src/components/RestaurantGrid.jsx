@@ -27,7 +27,6 @@ const getPlaceDetails = async (restaurant) => {
     params: {
       input: restaurant.aka_name,
       inputtype: "textquery",
-      key: "AIzaSyCTAUbZfKHPnx35FCV2jLwIzykGzxnSEwQ",
       locationbias:"point:${restaurant.latitude},${restaurant.longitude}",
     },
   }).then((res) => {
