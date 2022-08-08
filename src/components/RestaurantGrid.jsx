@@ -37,7 +37,6 @@ const getPlaceDetails = async (restaurant) => {
     url: `/api/maps/api/place/details/json`,
     params: {
       place_id: getRestaurantID,
-      key: "AIzaSyCTAUbZfKHPnx35FCV2jLwIzykGzxnSEwQ",
       // fields: "url"
     }
   }).then((res) => {
