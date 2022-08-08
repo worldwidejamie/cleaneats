@@ -9,6 +9,9 @@ import RestaurantGrid from "./RestaurantGrid";
 
 RestaurantGrid.propTypes = {
   restaurantName: PropTypes.string,
+  latitude: PropTypes.number,
+  longitude: PropTypes.number,
+  address: PropTypes.string
 };
 
 function capitalCase(str) {
@@ -84,9 +87,11 @@ export default function RestaurantCard(props) {
             aria-describedby="restaurant-modal-description"
         >
           <Card style={modalStyle}>
-            <h1>Hello</h1>
             {/* eslint-disable-next-line react/prop-types */}
-            <h2>{props.restaurantName}</h2>
+            <h2>{capitalCase(props.restaurantName)}</h2>
+            <span>Latitude: {props.latitude}</span><br/>
+            <span>Longitude: {props.longitude}</span><br/>
+            <span>Address: {props.address}</span><br/>`
           </Card>
         </Modal>
       </Card>
