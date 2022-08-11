@@ -1,4 +1,5 @@
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, {useLayoutEffect, useState} from "react";
+import creds from "../../creds.js";
 import axios from "axios";
 import useGeolocation from "react-hook-geolocation";
 import RestaurantCard from "./RestaurantCard";
@@ -27,22 +28,46 @@ const getPlaceDetails = async (restaurant) => {
     params: {
       input: restaurant.aka_name,
       inputtype: "textquery",
+      key: creds.googleAPIKey,
       locationbias:"point:${restaurant.latitude},${restaurant.longitude}",
     },
   }).then((res) => {
-    return res.data.candidates[0].place_id;
+    if (res.data.candidates.length > 0) {
+      return res.data.candidates[0].place_id;
+    }
   })
+
   return axios({
     method: "get",
     url: `/api/maps/api/place/details/json`,
     params: {
       place_id: getRestaurantID,
-      // fields: "url"
+      key: creds.googleAPIKey,
+      fields: "url"
     }
   }).then((res) => {
-    console.log(res.data)
+    return res.data.result
   });
 }
+
+const getRestaurants = async (latitude, longitude, inspectionResult) => {
+
+  return await axios({
+    method: "get",
+    url: `/resource/4ijn-s7e5.json`,
+    baseURL: "https://data.cityofchicago.org/",
+    responseType: "json",
+    params: {
+      $order: "inspection_date DESC",
+      $where: `within_circle(location,  ${longitude}, ${latitude},1000) AND facility_type='Restaurant'`,
+      results: inspectionResult,
+      $limit: "9",
+    },
+  })
+      .then((res) => {
+        return res.data
+      });
+};
 
 
 export default function RestaurantGrid(props) {
@@ -55,6 +80,8 @@ export default function RestaurantGrid(props) {
   const [inspectionResult, setInspectionResult] = useState(
       props.inspectionResult
   );
+
+  // Get and Set Geolocation
   useLayoutEffect(() => {
     if (geolocation.error) {
       setError(geolocation.error);
@@ -67,30 +94,21 @@ export default function RestaurantGrid(props) {
     localStorage.setItem("longitude", geolocation.longitude);
   }, [latitude, longitude, geolocation]);
 
-  useEffect(() => {
+  // Get and Set Restaurant Data
+  useLayoutEffect(() => {
+    let restaurants = [];
     setInspectionResult(props.inspectionResult);
-    const getRestaurants = async () => {
-      axios({
-        method: "get",
-        url: `/resource/4ijn-s7e5.json`,
-        baseURL: "https://data.cityofchicago.org/",
-        responseType: "json",
-        params: {
-          $order: "inspection_date DESC",
-          $where: `within_circle(location,  ${longitude}, ${latitude},1000) AND facility_type='Restaurant'`,
-          results: inspectionResult,
-          $limit: "9",
-        },
-      }).then((res) => {
-        setRestaurant(res.data);
-      });
-    };
     if (restaurant.length === 0) {
-      getRestaurants();
-    }
-
-    if (restaurant.length > 0) {
-      setIsLoaded(true);
+      getRestaurants(latitude, longitude, inspectionResult).then((res) => {
+        res.forEach((rest) => {
+          getPlaceDetails(rest).then((res) => {
+            rest.url = res.url
+          })
+          restaurants.push(rest)
+        })
+        setRestaurant(restaurants)
+        setIsLoaded(true)
+      })
     }
   }, [
     restaurant,
@@ -98,8 +116,8 @@ export default function RestaurantGrid(props) {
     latitude,
     props.inspectionResult,
     inspectionResult,
+    isLoaded
   ]);
-
 
 
   let cardResponse;
@@ -141,11 +159,9 @@ export default function RestaurantGrid(props) {
     );
   } else {
     cardResponse = restaurant.map((restaurant) => (
-
         <Grid item sm={6} md={4} key={restaurant.inspection_id}>
           <RestaurantCard
               restaurant={restaurant}
-              placeDetails={getPlaceDetails(restaurant)}
               restaurantName={
                 restaurant.aka_name ? restaurant.aka_name : restaurant.dba_name
               }
