@@ -1,6 +1,5 @@
 # Clean Eats
 
-An app to help you find restaurants near you that have recently failed their 
-health inspection.
+An app to help you find clean restaurants in Chicago, IL.
 
 Currently only works in Chicago, IL.
